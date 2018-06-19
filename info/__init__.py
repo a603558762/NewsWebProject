@@ -6,15 +6,13 @@ from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from redis import StrictRedis
-
-# from info.modules.index import Index_blu
-
 from config import Config, config
 
-# from info.modules.index import Index_blu
+
+
 
 db = SQLAlchemy()
-redis_store=None  # type: StrictRedis
+redis_store=1  # type: StrictRedis
 sess = Session()
 
 
@@ -26,10 +24,12 @@ def create_app(config_name):
     db.init_app(app)
 
     global redis_store
+    # 使用这个redis_store进行数据操作,config里面的SESSION_REDIS是做配置用的,配置存储的位置用
+    # session的使用也有两个,一个是做配置
     redis_store = StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
 
     from info.modules.index import Index_blu
-    # 蓝图注册
+    # 蓝图注册的导入
     app.register_blueprint(Index_blu)
 
     # 防止CSRF跨站伪造

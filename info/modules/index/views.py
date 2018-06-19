@@ -12,7 +12,7 @@ def index():
     # 设置session位置保存的时候使用的是:TODO from flask_session import Session
     session['aaa']='wangwnagban'
 
-    logging.debug('错误1111')
+    # logging.debug('错误1111')
 
 
 
