@@ -2,3 +2,7 @@
 *.py[cod]
 log*
 migrations/
+info/static/.DS_Store
+info/static/admin/.DS_Store
+info/static/news/.DS_Store
+
