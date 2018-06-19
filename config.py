@@ -1,15 +1,21 @@
 # 配置文件
+from logging import ERROR, WARNING
+
 from redis import StrictRedis
 
 
+
+
+
 class Config(object):
-    DEBUG=True
+
     SECRET_KEY='gsfdfhdfgdhfh'
-    SQLALCHEMY_DATABASE_URI='mysql://root:hh123456@localhost3306/information'
+    SQLALCHEMY_DATABASE_URI='mysql://root:hh123456@localhost:3306/information'
     SQLALCHEMY_TRACK_MODIFICATIONS=False
     # redis配置
     REDIS_HOST='127.0.0.1'
     REDIS_PORT=6379
+
     # Session 配置
     SESSION_TYPE='redis'
     # 开启签名
@@ -20,3 +26,24 @@ class Config(object):
 
     # 设置过期时间
     SESSION_PERMANENT=False
+
+# 在不同环境下的配置,开发,生产,测试
+class Dev(Config):
+    DEBUG = True
+    LOG_LEVEL=DEBUG
+
+
+class Production(Config):
+    DEBUG = True
+    LOG_LEVEL = WARNING
+
+
+class TestingConfig(Config):
+    DEBUG=True
+    LOG_LEVEL=ERROR
+
+config={
+    'dev':Dev,
+    'production':Production,
+    'testingconfig':TestingConfig
+}
