@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
 from redis import StrictRedis
 from config import Config, config
-
+# from info.modules.index import Index_blu
 
 
 
@@ -29,6 +29,7 @@ def create_app(config_name):
     redis_store = StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
 
     from info.modules.index import Index_blu
+
     # 蓝图注册的导入
     app.register_blueprint(Index_blu)
 

@@ -16,7 +16,7 @@ class Config(object):
     REDIS_HOST='127.0.0.1'
     REDIS_PORT=6379
 
-    # Session 配置
+    # Session 配置存储到redis
     SESSION_TYPE='redis'
     # 开启签名
     SESSION_USE_SIGNER=True
