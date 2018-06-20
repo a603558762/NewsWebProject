@@ -10,7 +10,6 @@ from config import Config, config
 # from info.modules.index import Index_blu
 
 
-
 db = SQLAlchemy()
 redis_store=1  # type: StrictRedis
 sess = Session()
@@ -30,8 +29,12 @@ def create_app(config_name):
 
     from info.modules.index import Index_blu
 
-    # 蓝图注册的导入
+    # 主页蓝图注册的导入
     app.register_blueprint(Index_blu)
+
+    # passport_blu 蓝图注册
+    from info.modules.passport import passport_blu
+    app.register_blueprint(passport_blu)
 
     # 防止CSRF跨站伪造
     CSRFProtect(app)

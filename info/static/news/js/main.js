@@ -152,7 +152,8 @@ var imageCodeId = ""
 
 // TODO 生成一个图片验证码的编号，并设置页面中图片验证码img标签的src属性
 function generateImageCode() {
-
+    var captch=generateUUID()
+    $('.get_pic_code').prop({'src':'/passport/image/captch_img/'+'captch_id'+captch})
 
 
 }
@@ -201,6 +202,7 @@ function getCookie(name) {
     return r ? r[1] : undefined;
 }
 
+// 生成uuid
 function generateUUID() {
     var d = new Date().getTime();
     if(window.performance && typeof window.performance.now === "function"){
