@@ -194,19 +194,34 @@ function sendSMSCode() {
 
         success: function (dat) {
             if (dat.errno=="0"){
-                var num = 60;
+                var num = 10;
+
                 // 验证码正确,开始发短信给手机后,这里开机倒计时60s
                 var t=setInterval(function(){
-                    num-=1;
-                    $(".get_code").html(num);
-                    if(num==0){
+
+                    if(num!=0){
+                        $(".get_code").html(num+ "秒重发");
+                        num-=1;
+                    }else{
+                        clearInterval(t)
                         $(".get_code").html('点击获取验证码');
                         $(".get_code").attr("onclick","sendSMSCode();")
                     }
 
+                    // if(num==0){
+                    //     clearInterval(t)
+                    //     $(".get_code").html('点击获取验证码');
+                    //     $(".get_code").attr("onclick","sendSMSCode();")
+                    //
+                    // }else{
+                    //
+                    //     $(".get_code").html(num+ "秒重发");
+                    //     num-=1;
+                    // }
+
+
                 },1000);
 
-                $(".get_code").html(num);
 
             }else{
                 // 验证码不正确

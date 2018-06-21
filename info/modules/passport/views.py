@@ -59,14 +59,14 @@ def check_captch_id():
     # 发送短信本地随机生成短信验证码
     randam_smscode= ''.join(str(i) for i in random.sample(range(0, 9), 6))
     print(randam_smscode)
-    # 导入云通讯平台,电信的服务发送短信
-    sms_status=CCP().send_template_sms(to=18506255964,datas=[randam_smscode,SMS_CODE_REDIS_EXPIRES/60],temp_id=1)
-    if sms_status==0:
-        print('发送成功')
-        return jsonify(errno=RET.OK, errmsg="发送成功")
-    elif sms_status==-1:
-        print('电信发送失败')
-    else:
-        print('未知错误')
+    # # 导入云通讯平台,电信的服务发送短信
+    # sms_status=CCP().send_template_sms(to=18506255964,datas=[randam_smscode,SMS_CODE_REDIS_EXPIRES/60],temp_id=1)
+    # if sms_status==0:
+    #     print('发送成功')
+    #     return jsonify(errno=RET.OK, errmsg="发送成功")
+    # elif sms_status==-1:
+    #     print('电信发送失败')
+    # else:
+    #     print('未知错误')
 
     return jsonify(errno=RET.OK, errmsg="发送成功")
