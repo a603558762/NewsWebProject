@@ -13,7 +13,7 @@ from config import Config, config
 db = SQLAlchemy()
 redis_store=1  # type: StrictRedis
 sess = Session()
-csrf = CSRFProtect()
+# csrf = CSRFProtect()
 
 # 以前的初始化的代码都是在__init__文件中的
 def create_app(config_name):

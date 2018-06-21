@@ -179,85 +179,47 @@ function sendSMSCode() {
 
     // TODO 发送短信验证码
 
-
-
-    // 发送短信验证码
-    var params = {
-        "mobile": mobile,
-        "image_code":imageCode,
-        "image_code_id": captch
-    }
-    alert(mobile)
-    alert(imageCode)
-    alert(captch)
     // 发起短信请求
+    var param = {
+        "mobile": mobile,
+        "input_captch": imageCode,
+        "uuid":captch,
+    };
+
     $.ajax({
-        // 请求地址
-        url: "/passport/image/check",
-        // 请求方式
+        url: "passport/image/check",
         type: "post",
-        // 请求参数
-        data: JSON.stringify(params),
-        headers: {
-            "X-CSRFToken": getCookie('csrf_token')
-        },
-        // 请求参数的数据类型
+        data: JSON.stringify(param),
         contentType: "application/json",
-        success: function (response) {
-            // if (response.errno == "0") {
-            //     // 代表发送成功
-            //     var num = 60
-            //     var t = setInterval(function () {
-            //
-            //         if (num == 1) {
-            //             // 代表倒计时结束
-            //             // 清除倒计时
-            //             clearInterval(t)
-            //
-            //             // 设置显示内容
-            //             $(".get_code").html("点击获取验证码")
-            //             // 添加点击事件
-            //             $(".get_code").attr("onclick", "sendSMSCode();");
-            //         }else {
-            //             num -= 1
-            //             // 设置 a 标签显示的内容
-            //             $(".get_code").html(num + "秒")
-            //         }
-            //     }, 1000)
-            // }else {
-            //     // 代表发送失败
-            //     alert(response.errmsg)
-            //     $(".get_code").attr("onclick", "sendSMSCode();");
-            // }
+
+        success: function (dat) {
+            if (dat.errno=="0"){
+                var num = 60;
+                // 验证码正确,开始发短信给手机后,这里开机倒计时60s
+                var t=setInterval(function(){
+                    num-=1;
+                    $(".get_code").html(num);
+                    if(num==0){
+                        $(".get_code").html('点击获取验证码');
+                        $(".get_code").attr("onclick","sendSMSCode();")
+                    }
+
+                },1000);
+
+                $(".get_code").html(num);
+
+            }else{
+                // 验证码不正确
+            }
+
         }
 
+
     })
-    // return false
-    // alert('mobile:'+mobile)
-// alert('uuid:'+imageCode)
-// alert('input_captch:'+captch)
 
-    // var param = {
-    //     "mobile": mobile,
-    //     "uuid": imageCode,
-    //     "input_captch":captch,
-    //
-    // };
 
-    // $.ajax({
-    //     url: "passport/image/check",
-    //     type: "post",
-    //     data: JSON.stringify(param),
-    //     contentType: "application/json",
-    //     headers: {
-    //         "X-CSRFToken": getCookie('csrf_token')
-    //     },
-    //     success: function (dat) {
-    //
-    //     }
-    //
-    //
-    // })
+
+
 }
 // 调用该函数模拟点击左侧按钮
 function fnChangeMenu(n) {
