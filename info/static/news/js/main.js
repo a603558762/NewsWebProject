@@ -152,7 +152,7 @@ var imageCodeId = ""
 
 // TODO 生成一个图片验证码的编号，并设置页面中图片验证码img标签的src属性
 function generateImageCode() {
-    var captch=generateUUID()
+    captch=generateUUID()
     $('.get_pic_code').prop({'src':'/passport/image/captch_img/'+'captch_id'+captch})
 
 
@@ -178,8 +178,87 @@ function sendSMSCode() {
     }
 
     // TODO 发送短信验证码
-}
 
+
+
+    // 发送短信验证码
+    var params = {
+        "mobile": mobile,
+        "image_code":imageCode,
+        "image_code_id": captch
+    }
+    alert(mobile)
+    alert(imageCode)
+    alert(captch)
+    // 发起短信请求
+    $.ajax({
+        // 请求地址
+        url: "/passport/image/check",
+        // 请求方式
+        type: "post",
+        // 请求参数
+        data: JSON.stringify(params),
+        headers: {
+            "X-CSRFToken": getCookie('csrf_token')
+        },
+        // 请求参数的数据类型
+        contentType: "application/json",
+        success: function (response) {
+            // if (response.errno == "0") {
+            //     // 代表发送成功
+            //     var num = 60
+            //     var t = setInterval(function () {
+            //
+            //         if (num == 1) {
+            //             // 代表倒计时结束
+            //             // 清除倒计时
+            //             clearInterval(t)
+            //
+            //             // 设置显示内容
+            //             $(".get_code").html("点击获取验证码")
+            //             // 添加点击事件
+            //             $(".get_code").attr("onclick", "sendSMSCode();");
+            //         }else {
+            //             num -= 1
+            //             // 设置 a 标签显示的内容
+            //             $(".get_code").html(num + "秒")
+            //         }
+            //     }, 1000)
+            // }else {
+            //     // 代表发送失败
+            //     alert(response.errmsg)
+            //     $(".get_code").attr("onclick", "sendSMSCode();");
+            // }
+        }
+
+    })
+    // return false
+    // alert('mobile:'+mobile)
+// alert('uuid:'+imageCode)
+// alert('input_captch:'+captch)
+
+    // var param = {
+    //     "mobile": mobile,
+    //     "uuid": imageCode,
+    //     "input_captch":captch,
+    //
+    // };
+
+    // $.ajax({
+    //     url: "passport/image/check",
+    //     type: "post",
+    //     data: JSON.stringify(param),
+    //     contentType: "application/json",
+    //     headers: {
+    //         "X-CSRFToken": getCookie('csrf_token')
+    //     },
+    //     success: function (dat) {
+    //
+    //     }
+    //
+    //
+    // })
+}
 // 调用该函数模拟点击左侧按钮
 function fnChangeMenu(n) {
     var $li = $('.option_list li');

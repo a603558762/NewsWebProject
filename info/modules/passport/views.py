@@ -1,8 +1,9 @@
-from flask import request, current_app, make_response
+from flask import request, current_app, make_response, jsonify, json
 
 from info import redis_store
 from info.constants import IMAGE_CODE_REDIS_EXPIRES
 from info.utils.captcha.captcha import captcha
+from info.utils.response_code import RET
 from . import passport_blu
 
 
@@ -29,3 +30,16 @@ def get_image_code(id):
     response.headers['Content-Type']='image/jpg'
     # pass
     return response
+
+
+@passport_blu.route('/image/check',methods=['POST'])
+def check_captch_id():
+    # 获取传入的uuid,手机号,输入的验证码
+
+    '{"mobiel": "18811111111", "image_code": "AAAA", "image_code_id": "u23jksdhjfkjh2jh4jhdsj"}'
+    param_dict = json.loads(request.data)
+    print(param_dict)
+    # 判断图形验证码是否正确
+
+    return jsonify(errno=RET.OK, errmsg="发送成功")
+

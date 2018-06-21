@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import CSRFProtect
+from flask_wtf import CSRFProtect, csrf
 from redis import StrictRedis
 from config import Config, config
 # from info.modules.index import Index_blu
@@ -13,7 +13,7 @@ from config import Config, config
 db = SQLAlchemy()
 redis_store=1  # type: StrictRedis
 sess = Session()
-
+csrf = CSRFProtect()
 
 # 以前的初始化的代码都是在__init__文件中的
 def create_app(config_name):
@@ -37,7 +37,7 @@ def create_app(config_name):
     app.register_blueprint(passport_blu)
 
     # 防止CSRF跨站伪造
-    CSRFProtect(app)
+    # CSRFProtect(app)
     # 将session保存到redis
     sess.init_app(app)
     setup_log(config_name)
