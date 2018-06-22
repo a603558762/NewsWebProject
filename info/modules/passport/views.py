@@ -1,5 +1,6 @@
 import errno
 import random
+import re
 
 from flask import request, current_app, make_response, jsonify, json
 
@@ -45,7 +46,7 @@ def check_captch_id():
     img_captcha_id = 'captch_id' + param_dict['uuid']
     phone_num = param_dict['mobile']
     try:
-        real_captcha_id = redis_store.get(img_captcha_id).decode()
+        real_captcha_id = redis_store.get(img_captcha_id)
     except Exception as e:
         current_app.logger.debug(e)
 
@@ -55,7 +56,9 @@ def check_captch_id():
     # 验证码是否过期
     if not real_captcha_id:
         return jsonify(errno=RET.NODATA, errmsg="验证码过期")
-
+    # 验证手机好:
+    if not re.match(r'^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d{8}$',phone_num):
+        return jsonify(errno=RET.DATAERR, errmsg="手机号错误")
     # 发送短信本地随机生成短信验证码
     randam_smscode= ''.join(str(i) for i in random.sample(range(0, 9), 6))
     print(randam_smscode)

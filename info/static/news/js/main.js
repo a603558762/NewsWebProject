@@ -193,6 +193,7 @@ function sendSMSCode() {
         contentType: "application/json",
 
         success: function (dat) {
+            console.log(dat)
             if (dat.errno=="0"){
                 var num = 10;
 
