@@ -8,10 +8,11 @@ from redis import StrictRedis
 
 
 class Config(object):
-
+    # SQLALCHEMY配置
     SECRET_KEY='gsfdfhdfgdhfh'
     SQLALCHEMY_DATABASE_URI='mysql://root:hh123456@localhost:3306/information'
     SQLALCHEMY_TRACK_MODIFICATIONS=False
+    SQLALCHEMY_COMMIT_ON_TEARDOWN=True
     # redis配置
     REDIS_HOST='127.0.0.1'
     REDIS_PORT=6379

@@ -110,6 +110,28 @@ $(function(){
         }
 
         // 发起登录请求
+        var params={
+            "mobile":mobile,
+            "password":password
+
+        }
+        $.ajax({
+            url: "/passport/login",
+            type: "post",
+            data: JSON.stringify(params),
+
+            contentType: "application/json",
+            success: function (dat) {
+                console.log(dat)
+                if(dat.errno==0){
+                    // location.reload()
+                }
+
+                },error:{
+
+            }
+        })
+
     })
 
 
@@ -144,6 +166,29 @@ $(function(){
         }
 
         // 发起注册请求
+        var params={
+            "mobile":mobile,
+            "smscode":smscode,
+            "password":password
+        }
+
+        console.log(params)
+        $.ajax({
+                url: "/passport/register",
+                type: "post",
+                data: JSON.stringify(params),
+                contentType: "application/json",
+                success: function (dat) {
+                    console.log(dat)
+                    if(dat.errno==0){
+                        location.reload()
+
+                    }
+
+                    },error:{
+
+                }
+                })
 
     })
 })
@@ -202,6 +247,7 @@ function sendSMSCode() {
 
                     if(num!=0){
                         $(".get_code").html(num+ "秒重发");
+                        // $(".get_code").show()
                         num-=1;
                     }else{
                         clearInterval(t)
@@ -272,3 +318,4 @@ function generateUUID() {
     });
     return uuid;
 }
+
