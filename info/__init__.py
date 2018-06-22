@@ -5,6 +5,7 @@ from flask import Flask
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect, csrf
+from flask_wtf.csrf import generate_csrf
 from redis import StrictRedis
 from config import Config, config
 # from info.modules.index import Index_blu
@@ -35,9 +36,16 @@ def create_app(config_name):
     # passport_blu 蓝图注册
     from info.modules.passport import passport_blu
     app.register_blueprint(passport_blu)
-
+    # 创建自定义的过滤器
+    # app.add_template_filter()
     # 防止CSRF跨站伪造
-    # CSRFProtect(app)
+    CSRFProtect(app)
+
+    @app.after_request
+    def after_request(response):
+        csrf_token = generate_csrf()
+        response.set_cookie('csrf_token', csrf_token)
+        return response
     # 将session保存到redis
     sess.init_app(app)
     setup_log(config_name)

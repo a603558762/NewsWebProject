@@ -119,12 +119,12 @@ $(function(){
             url: "/passport/login",
             type: "post",
             data: JSON.stringify(params),
-
+            headers: {'X-CSRFToken':getCookie('csrf_token')},
             contentType: "application/json",
             success: function (dat) {
                 console.log(dat)
                 if(dat.errno==0){
-                    // location.reload()
+                    location.reload()
                 }
 
                 },error:{
@@ -174,21 +174,22 @@ $(function(){
 
         console.log(params)
         $.ajax({
-                url: "/passport/register",
-                type: "post",
-                data: JSON.stringify(params),
-                contentType: "application/json",
-                success: function (dat) {
-                    console.log(dat)
-                    if(dat.errno==0){
-                        location.reload()
-
-                    }
-
-                    },error:{
+            url: "/passport/register",
+            type: "post",
+            data: JSON.stringify(params),
+            contentType: "application/json",
+            headers: {'X-CSRFToken':getCookie('csrf_token')},
+            success: function (dat) {
+                console.log(dat)
+                if(dat.errno==0){
+                    location.reload()
 
                 }
-                })
+
+                },error:{
+
+            }
+            })
 
     })
 })
@@ -236,7 +237,7 @@ function sendSMSCode() {
         type: "post",
         data: JSON.stringify(param),
         contentType: "application/json",
-
+        headers: {'X-CSRFToken':getCookie('csrf_token')},
         success: function (dat) {
             console.log(dat)
             if (dat.errno=="0"){
@@ -319,3 +320,18 @@ function generateUUID() {
     return uuid;
 }
 
+function logout(){
+    $.ajax({
+        url: "/passport/logout",
+        type: "get",
+        // data: JSON.stringify(params),
+        // contentType: "application/json",
+        headers: {'X-CSRFToken':getCookie('csrf_token')},
+        success: function (dat) {
+            location.reload()
+
+            },error:{
+
+        }
+    })
+}

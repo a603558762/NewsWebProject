@@ -133,6 +133,13 @@ def register():
     except Exception as e:
         current_app.logger.debug(e)
 
+
+    # 注册后添加SESSION
+    session['nick_name']=mobile
+    session["user_id"] = mobile
+    session["mobile"] = mobile
+
+
     return jsonify(errno=RET.OK, errmsg="注册成功")
 
 @passport_blu.route('/login',methods=['post'])
@@ -173,3 +180,13 @@ def login():
     user.last_login = datetime.now()
 
     return jsonify(errno=RET.OK, errmsg="登录成功")
+
+
+@passport_blu.route('/logout')
+def logout():
+    # 退出后清理session,刷新页面
+    session.pop('user_id', None)
+    session.pop('mobile', None)
+    session.pop('nick_name', None)
+
+    return jsonify(errno=RET.OK, errmsg="退出成功")
