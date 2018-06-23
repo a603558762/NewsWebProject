@@ -44,7 +44,46 @@ $(function () {
         }
     })
 })
-
+updateNewsData()
 function updateNewsData() {
     // TODO 更新新闻数据
+    params={
+        "currentCid": currentCid,
+        "cur_page":cur_page
+
+    }
+    $.get('/news_list',JSON.stringify(params),function (dat) {
+        // get
+        // console.log(dat.data)
+        // 当访问的是首页的时候
+
+        if($('.active').attr('data-cid')==0){
+            // 首页的新闻列表清空
+            $('.list_con').html("")
+            var content=''
+            for(i=0;i<dat.data.news_list_dict.length;i++){
+                    // console.log(dat.data.news_list_dict[i].index_image_url)
+
+                  content+='<li>'
+                            +'<a href="#" class="news_pic fl"><img src="'+dat.data.news_list_dict[i].index_image_url+'"></a>'
+                            +'<a href="#" class="news_title fl">'+dat.data.news_list_dict[i].title+'</a>'
+                            +'<a href="#" class="news_detail fl">'+dat.data.news_list_dict[i].digest+'</a>'
+                            +'<div class="author_info fl">'
+                                +'<div class="author fl">'
+                                    +'<img src="../../static/news/images/person.png" alt="author">'
+                                    +'<a href="#">'+dat.data.news_list_dict[i].source+'</a>'
+                                +'</div>'
+                                +'<div class="time fl">'+dat.data.news_list_dict[i].create_time+'</div>'
+                            +'</div>'
+                        +'</li>'
+            }
+
+            $('.list_con').html(content)
+
+
+
+
+            // 加载传回来的新闻消息
+        }
+    })
 }
