@@ -21,6 +21,9 @@ $(function(){
     $(".register_form #mobile").focus(function(){
         $("#register-mobile-err").hide();
     });
+    // $(".register_form #mobile").blur(function(){
+    //
+    // }
     $(".register_form #imagecode").focus(function(){
         $("#register-image-code-err").hide();
     });
@@ -125,6 +128,10 @@ $(function(){
                 console.log(dat)
                 if(dat.errno==0){
                     location.reload()
+                }else{
+                    $('#login-password-err').html(dat.errmsg)
+                    $('#login-password-err').show()
+
                 }
 
                 },error:{
@@ -184,7 +191,12 @@ $(function(){
                 if(dat.errno==0){
                     location.reload()
 
-                }
+                }else{
+
+                   $("#register-password-err").html(dat.errmsg)
+                   $("#register-password-err").show()
+
+                };
 
                 },error:{
 
@@ -255,25 +267,13 @@ function sendSMSCode() {
                         $(".get_code").html('点击获取验证码');
                         $(".get_code").attr("onclick","sendSMSCode();")
                     }
-
-                    // if(num==0){
-                    //     clearInterval(t)
-                    //     $(".get_code").html('点击获取验证码');
-                    //     $(".get_code").attr("onclick","sendSMSCode();")
-                    //
-                    // }else{
-                    //
-                    //     $(".get_code").html(num+ "秒重发");
-                    //     num-=1;
-                    // }
-
-
                 },1000);
 
-
             }else{
+                $('#register-sms-code-err').html(dat.errmsg)
+                $('#register-sms-code-err').show()
                 // 验证码不正确
-            }
+            }_
 
         }
 
