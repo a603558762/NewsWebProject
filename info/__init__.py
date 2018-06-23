@@ -37,7 +37,8 @@ def create_app(config_name):
     from info.modules.passport import passport_blu
     app.register_blueprint(passport_blu)
     # 创建自定义的过滤器
-    # app.add_template_filter()
+    from info.utils.common import do_index_class
+    app.add_template_filter(do_index_class,'do_index_class')
     # 防止CSRF跨站伪造
     CSRFProtect(app)
 
