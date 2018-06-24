@@ -42,9 +42,9 @@ def index():
         "user":user.to_dict() if user else None,
         "rank_list":rank_list
     }
-    print(data)
+    # print(data)
 
-    print('用户已登录')
+
 
 
     return render_template('news/index.html',data=data)
@@ -53,14 +53,15 @@ def index():
 @Index_blu.route('/news_list')
 def news_list():
     # 获取请求的新闻
+    # print(request.args)
     cid=request.args.get('currentCid','1')
     cur_page=request.args.get('cur_page','1')
-    per_page = request.args.get("per_page",'10')
+    per_page = request.args.get("per_page",'5')
 
     """ImmutableMultiDict([('{"currentCid":0,"cur_page":1}', '')])"""
 
-    print(cid)
-    print(cur_page)
+    # print(cid)
+    # print(cur_page)
     # 校验数据
     try:
         cid=int(cid)

@@ -1,4 +1,4 @@
-var currentCid = 0; // 当前分类 id
+var currentCid = 1; // 当前分类 id
 var cur_page = 1; // 当前页
 var total_page = 1;  // 总页数
 var data_querying = true;   // 是否正在向后台获取数据
@@ -12,16 +12,24 @@ $(function () {
             $(this).removeClass('active')
         })
         $(this).addClass('active')
+        // console.log($(this))
+        // console.log(currentCid)
 
-        if (clickCid != currentCid) {
-            // 记录当前分类id
-            currentCid = clickCid
-
-            // 重置分页参数
-            cur_page = 1
-            total_page = 1
-            updateNewsData()
-        }
+        currentCid = clickCid
+        cur_page = 1
+        total_page = 1
+        updateNewsData()
+        // if (clickCid != currentCid) {
+        //     // 记录当前分类id
+        //     currentCid = clickCid
+        //
+        //     // 重置分页参数
+        //     cur_page = 1
+        //     total_page = 1
+        //
+        //
+        //     updateNewsData()
+        // }
     })
 
     //页面滚动加载相关
@@ -38,28 +46,36 @@ $(function () {
 
         // 页面滚动了多少,这个是随着页面滚动实时变化的
         var nowScroll = $(document).scrollTop();
-
+        console.log(showHeight,pageHeight)
         if ((canScrollHeight - nowScroll) < 100) {
+            if(cur_page<total_page){
             // TODO 判断页数，去更新新闻数据
+            cur_page+=1
+            updateNewsData()
+            }else{
+                // 到底了
+            }
         }
     })
 })
 updateNewsData()
 function updateNewsData() {
     // TODO 更新新闻数据
-    params={
+    var params={
         "currentCid": currentCid,
-        "cur_page":cur_page
-
+        "cur_page":cur_page,
+        "total_page":total_page
     }
-    $.get('/news_list',JSON.stringify(params),function (dat) {
+    // console.log(params)
+    $.get('/news_list',params,function (dat) {
         // get
         // console.log(dat.data)
         // 当访问的是首页的时候
 
-        if($('.active').attr('data-cid')==0){
+        if(cur_page==1) {
             // 首页的新闻列表清空
             $('.list_con').html("")
+        }
             var content=''
             for(i=0;i<dat.data.news_list_dict.length;i++){
                     // console.log(dat.data.news_list_dict[i].index_image_url)
@@ -78,12 +94,13 @@ function updateNewsData() {
                         +'</li>'
             }
 
-            $('.list_con').html(content)
+            $('.list_con').append(content)
+            total_page=dat.data.total_pages
 
 
 
 
             // 加载传回来的新闻消息
-        }
+        // }
     })
 }
