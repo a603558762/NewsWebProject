@@ -36,6 +36,11 @@ def create_app(config_name):
     # passport_blu 蓝图注册
     from info.modules.passport import passport_blu
     app.register_blueprint(passport_blu)
+
+
+    # new_blu注册
+    from info.modules.news_detail import news_blu
+    app.register_blueprint(news_blu)
     # 创建自定义的过滤器
     from info.utils.common import do_index_class
     app.add_template_filter(do_index_class,'do_index_class')

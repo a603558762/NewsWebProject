@@ -46,7 +46,7 @@ $(function () {
 
         // 页面滚动了多少,这个是随着页面滚动实时变化的
         var nowScroll = $(document).scrollTop();
-        console.log(showHeight,pageHeight)
+        // console.log(showHeight,pageHeight)
         if ((canScrollHeight - nowScroll) < 100) {
             if(cur_page<total_page){
             // TODO 判断页数，去更新新闻数据
@@ -67,18 +67,22 @@ function updateNewsData() {
         "total_page":total_page
     }
     // console.log(params)
+
     $.get('/news_list',params,function (dat) {
         // get
         // console.log(dat.data)
         // 当访问的是首页的时候
-
         if(cur_page==1) {
             // 首页的新闻列表清空
             $('.list_con').html("")
         }
+        total_page=dat.data.total_pages
+        // console.log(dat.data)
+
+
             var content=''
             for(i=0;i<dat.data.news_list_dict.length;i++){
-                    // console.log(dat.data.news_list_dict[i].index_image_url)
+                    // console.log(dat.data)
 
                   content+='<li>'
                             +'<a href="#" class="news_pic fl"><img src="'+dat.data.news_list_dict[i].index_image_url+'"></a>'
@@ -93,9 +97,9 @@ function updateNewsData() {
                             +'</div>'
                         +'</li>'
             }
-
+            // console.log(content)
             $('.list_con').append(content)
-            total_page=dat.data.total_pages
+
 
 
 
@@ -104,3 +108,5 @@ function updateNewsData() {
         // }
     })
 }
+
+

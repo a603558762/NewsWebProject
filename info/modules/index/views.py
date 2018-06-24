@@ -97,10 +97,11 @@ def news_list():
 
     data={
         "news_list_dict":news_list_dict,
-        "totale_pages":totale_pages,
+        "total_pages":totale_pages,
         "current_page":current_page
     }
     print('Newslist数据传输成功')
+    print('totale_pages:',totale_pages)
     return jsonify(errno=RET.OK, errmsg="OK",data=data)
 
 

@@ -610,7 +610,7 @@ body{
 
 
 .collection{
-    display:inline-block;;
+    display:block;
     width:98px;
     line-height:34px;
     text-indent:45px;
@@ -618,9 +618,9 @@ body{
     color:#3791ef;
     border-radius:4px;
     font-size:14px;
-    margin:0px 5px;
+    /*margin:0px 5px;*/
     background:url(../images/collect_icons.png) 21px 7px no-repeat;
-    overflow:hidden;
+    /*overflow:hidden;*/
 }
 
 .block-center {
@@ -655,16 +655,16 @@ body{
 
 
 .collected{
-    display:inline-block;
+    display:block;
     width:100px;
     height:36px;
     color:#666;
     border-radius:4px;
     font-size:14px;
-    margin:0px 5px;
+    /*margin:0px 5px;*/
     background:url(../images/collect_icons.png) 15px -73px no-repeat #e6e6e6;
     position:relative;
-    overflow:hidden;
+    /*overflow:hidden;*/
 }
 
 .collected:hover{
@@ -680,17 +680,20 @@ body{
 .collected:hover .out{
     left:40px;
     top:35px;
+    display: none;
 }
 
 .collected .over{
     position:absolute;
     left:40px;
     top:35px;
+    display: none;
 }
 
 .collected:hover .over{
     left:33px;
     top:8px;
+    display: block;
 }
 
 

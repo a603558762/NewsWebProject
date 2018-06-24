@@ -13,13 +13,67 @@ $(function(){
 
     // 收藏
     $(".collection").click(function () {
+        var action="collect";
+        var news_id=$(this).attr('news_id');
 
-       
+        params={
+           "action" :action,
+            "news_id":news_id
+        }
+        $.ajax({
+            url: "/news_detail/collect_news",
+            type: "post",
+            data: JSON.stringify(params),
+            contentType: "application/json",
+
+            headers: {'X-CSRFToken':getCookie('csrf_token')},
+            success: function (dat) {
+
+
+                if(dat.errno==0){
+
+                    $('.collection').hide()
+                    $(".collected").show()
+                }
+
+                },error:{
+
+            }
+        })
+
+
     })
 
     // 取消收藏
     $(".collected").click(function () {
+        var action="remove";
+        var news_id=$(this).attr('news_id');
 
+        params={
+           "action" :action,
+            "news_id":news_id
+        }
+        $.ajax({
+            url: "/news_detail/collect_news",
+            type: "post",
+            data: JSON.stringify(params),
+            contentType: "application/json",
+
+            headers: {'X-CSRFToken':getCookie('csrf_token')},
+            success: function (dat) {
+
+
+                if(dat.errno==0){
+
+
+                    $(".collected").hide()
+                    $('.collection').show()
+                }
+
+                },error:{
+
+            }
+        })
      
     })
 
