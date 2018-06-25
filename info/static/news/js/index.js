@@ -46,8 +46,11 @@ $(function () {
 
         // 页面滚动了多少,这个是随着页面滚动实时变化的
         var nowScroll = $(document).scrollTop();
+
         // console.log(showHeight,pageHeight)
         if ((canScrollHeight - nowScroll) < 100) {
+             if(!query_data){
+             query_data=true
             if(cur_page<total_page){
             // TODO 判断页数，去更新新闻数据
             cur_page+=1
@@ -55,6 +58,7 @@ $(function () {
             }else{
                 // 到底了
             }
+        }
         }
     })
 })
@@ -80,14 +84,14 @@ function updateNewsData() {
         // console.log(dat.data)
 
 
+          query_data=false
             var content=''
             for(i=0;i<dat.data.news_list_dict.length;i++){
                     // console.log(dat.data)
-
                   content+='<li>'
-                            +'<a href="#" class="news_pic fl"><img src="'+dat.data.news_list_dict[i].index_image_url+'"></a>'
-                            +'<a href="#" class="news_title fl">'+dat.data.news_list_dict[i].title+'</a>'
-                            +'<a href="#" class="news_detail fl">'+dat.data.news_list_dict[i].digest+'</a>'
+                            +'<a href="/news_detail/'+dat.data.news_list_dict[i].id+'" class="news_pic fl"><img src="'+dat.data.news_list_dict[i].index_image_url+'"></a>'
+                            +'<a href="/news_detail/'+dat.data.news_list_dict[i].id+'" class="news_title fl">'+dat.data.news_list_dict[i].title+'</a>'
+                            +'<a href="/news_detail/'+dat.data.news_list_dict[i].id+'" class="news_detail fl">'+dat.data.news_list_dict[i].digest+'</a>'
                             +'<div class="author_info fl">'
                                 +'<div class="author fl">'
                                     +'<img src="../../static/news/images/person.png" alt="author">'

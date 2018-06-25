@@ -1,5 +1,6 @@
 from flask import render_template, session, current_app, g, request, jsonify
 
+from info import db
 from info.models import User, News
 from info.modules.news_detail import news_blu
 from info.utils.common import  user_data_info
@@ -17,7 +18,7 @@ def news_detail(news_id):
         current_app.logger.debug(e)
 
     if not news:
-        return '没有找到新闻!'
+        return jsonify(errno=RET.PARAMERR, errmsg="没有找到新闻")
 
 
     # 新闻排行榜
@@ -72,6 +73,7 @@ def collect_news():
         news_id=int(news_id)
         news=News.query.get(news_id)
     except Exception as e:
+        db.session.rollback()
         current_app.logger.debug(e)
 
 
@@ -83,8 +85,12 @@ def collect_news():
         try:
             user.collection_news.append(news)
         except Exception as e:
+            db.session.rollback()
             current_app.logger.debug(e)
         print('关注成功')
+        for i in user.collection_news:
+            print(i.id)
+            # print(i.create_time)
         return jsonify(errno=RET.OK, errmsg="收藏成功")
 
 
