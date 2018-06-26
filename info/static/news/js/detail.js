@@ -84,6 +84,7 @@ $(function(){
 
         var comment=$('.comment_input').val();
         var news_id=$('.comment_input').attr('news_id')
+
         // 提交评论
 
         params ={
@@ -119,6 +120,8 @@ $(function(){
 
                 $('.comment_list_con').prepend(content)
 
+                updateCommentCount()
+
                         // 请空输入框
                 // $(this).prev().val('')
 
@@ -153,8 +156,58 @@ $(function(){
             {
                 // 如果当前该评论已经是点赞状态，再次点击会进行到此代码块内，代表要取消点赞
                 $this.removeClass('has_comment_up')
+
+                // 取消点赞
+
+                var params={
+                    action:'remove',
+                    news_id:$('.comment_input').attr('news_id'),
+                    comment_id:$this.attr('comment_id')
+                }
+                $.ajax({
+                    url: "/news_detail/comment_up_down",
+                    type: "post",
+                    data: JSON.stringify(params),
+                    contentType: "application/json",
+                    headers: {'X-CSRFToken':getCookie('csrf_token')},
+                    success: function (dat) {
+                        // if (dat.errno!=0){
+                        //     alert(dat.errmsg)
+                        // }
+
+                        },error:{
+
+                    }
+                })
+
+
+
             }else {
                 $this.addClass('has_comment_up')
+                // 点赞
+                var params={
+                    action:'add',
+                    news_id:$('.comment_input').attr('news_id'),
+                    comment_id:$this.attr('comment_id')
+                }
+                $.ajax({
+                    url: "/news_detail/comment_up_down",
+                    type: "post",
+                    data: JSON.stringify(params),
+                    contentType: "application/json",
+                    headers: {'X-CSRFToken':getCookie('csrf_token')},
+                    success: function (dat) {
+                        // if (dat.errno!=0){
+                        //     alert(dat.errmsg)
+                        // }
+
+                        },error:{
+
+                    }
+                })
+
+
+
             }
         }
 
@@ -177,31 +230,6 @@ $(function(){
                 contentType: "application/json",
                 headers: {'X-CSRFToken':getCookie('csrf_token')},
                 success: function (dat) {
-
-                    console.log(dat.comment)
-                    // var content='';
-                    //     content+='<div class="comment_list">';
-                    //     content+='<div class="person_pic fl">' ;
-                    //     content+='<img src="../../static/news/images/worm.jpg" alt="用户图标">' ;
-                    //     content+='</div>'
-                    //     content+='<div class="user_name fl">'+dat.comment.user.nick_name+'</div>'
-                    //     content+='<div class="comment_text fl">';
-                    //     content+=dat.comment.content;
-                    //     content+='</div>';
-                    //     content+='</div>';
-                    //     content+='<div class="comment_time fl">'+dat.comment.create_time+'</div>';
-                    //     content+='<a href="javascript:;" class="comment_up has_comment_up fr">1</a>';
-                    //     content+='<a href="javascript:;" class="comment_reply fr">回复</a>';
-                    //     content+='<from class="reply_form fl">';
-                    //     content+='<textarea  class="reply_input"></textarea>';
-                    //     content+='<input type="submit" name="" value="回复" class="reply_sub fr">';
-                    //     content+='<input type="reset" name="" value="取消" class="reply_cancel fr">';
-                    //     content+='</from>';
-                    //     content+='</div>';
-
-                    // alert(dat.comment.parent.content)
-                    // alert(dat.comment.content)
-
                     var content='<div class="comment_list">' +
                         '                <div class="person_pic fl">' +
                         '                    <img src="../../static/news/images/worm.jpg" alt="用户图标">' +
@@ -224,12 +252,11 @@ $(function(){
 
 
                 $(".comment_list_con").prepend(content);
+                    //   TODO 评论数加1
+                updateCommentCount()
                 // 请空输入框
                 // $this.prev().val('')
                         // 关闭
-                alert($(this).parent().attr('class'))
-                alert($(this).attr('class'))
-
                     },error:{
 
                 }
@@ -248,3 +275,8 @@ $(function(){
 
     })
 })
+
+function updateCommentCount() {
+    var count = $(".comment_list").length
+    $(".comment_count").html(count+"条评论")
+}
