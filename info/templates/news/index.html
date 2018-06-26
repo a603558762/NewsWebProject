@@ -9,13 +9,18 @@
 {% endblock %}
 
 {% block category %}
+
     <ul class="menu fl">
-        <li class="active" data-cid="1"><a href="javascript:;">最新</a></li>
-        <li data-cid="2"><a href="javascript:;">股市</a></li>
-        <li data-cid="3"><a href="javascript:;">债市</a></li>
-        <li data-cid="4"><a href="javascript:;">商品</a></li>
-        <li data-cid="5"><a href="javascript:;">外汇</a></li>
-        <li data-cid="6"><a href="javascript:;">公司</a></li>
+
+    {% for i in data.category_list %}
+
+        <li class="{% if loop.index ==1 %}active{% endif %}" data-cid="{{ loop.index }}"><a href="javascript:;">{{ i.name }}</a></li>
+{#        <li data-cid="2"><a href="javascript:;">股市</a></li>#}
+{#        <li data-cid="3"><a href="javascript:;">债市</a></li>#}
+{#        <li data-cid="4"><a href="javascript:;">商品</a></li>#}
+{#        <li data-cid="5"><a href="javascript:;">外汇</a></li>#}
+{#        <li data-cid="6"><a href="javascript:;">公司</a></li>#}
+    {% endfor %}
     </ul>
 {% endblock %}
 

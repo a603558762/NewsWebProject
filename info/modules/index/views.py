@@ -3,7 +3,7 @@ import logging
 from flask import session, render_template, current_app, request, jsonify
 
 # from info import redis_store
-from info.models import User, News
+from info.models import User, News, Category
 from info.utils.response_code import RET
 from . import Index_blu
 from info import redis_store
@@ -26,6 +26,18 @@ def index():
 
     for i in rank_top:
         rank_list.append(i.title)
+    # 获取category分类信息:
+    category=None
+    category_list=list()
+    try:
+        category=Category.query.all()
+    except Exception as e:
+        current_app.logger.debug(e)
+    for i in category:
+        category_list.append(i.to_dict())
+
+
+
 
 
 
@@ -40,9 +52,10 @@ def index():
 
     data={
         "user":user.to_dict() if user else None,
-        "rank_list":rank_list
+        "rank_list":rank_list,
+        "category_list":category_list
     }
-    # print(data)
+    print(data["category_list"])
 
 
 

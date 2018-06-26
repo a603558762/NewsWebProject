@@ -41,6 +41,11 @@ def create_app(config_name):
     # new_blu注册
     from info.modules.news_detail import news_blu
     app.register_blueprint(news_blu)
+
+    # 个人中心
+    from info.modules.profile import profile_blu
+    app.register_blueprint(profile_blu)
+
     # 创建自定义的过滤器
     from info.utils.common import do_index_class
     app.add_template_filter(do_index_class,'do_index_class')

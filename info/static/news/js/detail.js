@@ -80,6 +80,55 @@ $(function(){
         // 评论提交
     $(".comment_form").submit(function (e) {
         e.preventDefault();
+        // 获取会的福评论的comment_id
+
+        var comment=$('.comment_input').val();
+        var news_id=$('.comment_input').attr('news_id')
+        // 提交评论
+
+        params ={
+            comment,
+            news_id
+        }
+
+        $.ajax({
+            url: "/news_detail/commit",
+            type: "post",
+            data: JSON.stringify(params),
+            contentType: "application/json",
+            headers: {'X-CSRFToken':getCookie('csrf_token')},
+            success: function (dat) {
+                console.log(dat.comment)
+                if (dat.errno==0){
+                // 拼接评论
+
+                var content='<div class="comment_list">' +
+                    '<div class="person_pic fl">' +
+                    '<img src="../../static/news/images/worm.jpg" alt="用户图标"></div>' +
+                    '<div class="user_name fl">'+dat.comment.user.nick_name+'</div>' +
+                    '<div class="comment_text fl" comment_id="'+dat.comment.id+'">'+dat.comment.content+'</div>' +
+                    '<div class="comment_time fl">'+dat.comment.create_time+'</div>' +
+                    '                <a href="javascript:;" class="comment_up fr">赞</a>' +
+                    '                <a href="javascript:;" class="comment_reply fr">回复</a>' +
+                    '                <from class="reply_form fl"  comment_id="'+ dat.comment.id +'" news_id="'+dat.comment.news_id +'">' +
+                    '                    <textarea  class="reply_input"></textarea>' +
+                    '                    <input type="submit" name="" value="回复" class="reply_sub fr">' +
+                    '                    <input type="reset" name="" value="取消" class="reply_cancel fr">' +
+                    '                </from>' +
+                    '</div>'
+
+                $('.comment_list_con').prepend(content)
+
+                        // 请空输入框
+                // $(this).prev().val('')
+
+                }
+                } ,error:{
+
+            }
+        })
+
+
 
     })
 
@@ -110,8 +159,82 @@ $(function(){
         }
 
         if(sHandler.indexOf('reply_sub')>=0)
-        {
-            alert('回复评论')
+
+        {  // 获取得到新闻的id , 评论的内容 , 回复的评论的id
+         var parent_comment_id=$(this).parent().attr('comment_id');
+         var news_id=$(this).parent().attr('news_id');
+         var comment=$(this).prev().val();
+
+         if(!comment){alert('评论不能为空')};
+            params={
+             parent_comment_id,news_id,comment
+            }
+
+            $.ajax({
+                url: "/news_detail/commit",
+                type: "post",
+                data: JSON.stringify(params),
+                contentType: "application/json",
+                headers: {'X-CSRFToken':getCookie('csrf_token')},
+                success: function (dat) {
+
+                    console.log(dat.comment)
+                    // var content='';
+                    //     content+='<div class="comment_list">';
+                    //     content+='<div class="person_pic fl">' ;
+                    //     content+='<img src="../../static/news/images/worm.jpg" alt="用户图标">' ;
+                    //     content+='</div>'
+                    //     content+='<div class="user_name fl">'+dat.comment.user.nick_name+'</div>'
+                    //     content+='<div class="comment_text fl">';
+                    //     content+=dat.comment.content;
+                    //     content+='</div>';
+                    //     content+='</div>';
+                    //     content+='<div class="comment_time fl">'+dat.comment.create_time+'</div>';
+                    //     content+='<a href="javascript:;" class="comment_up has_comment_up fr">1</a>';
+                    //     content+='<a href="javascript:;" class="comment_reply fr">回复</a>';
+                    //     content+='<from class="reply_form fl">';
+                    //     content+='<textarea  class="reply_input"></textarea>';
+                    //     content+='<input type="submit" name="" value="回复" class="reply_sub fr">';
+                    //     content+='<input type="reset" name="" value="取消" class="reply_cancel fr">';
+                    //     content+='</from>';
+                    //     content+='</div>';
+
+                    // alert(dat.comment.parent.content)
+                    // alert(dat.comment.content)
+
+                    var content='<div class="comment_list">' +
+                        '                <div class="person_pic fl">' +
+                        '                    <img src="../../static/news/images/worm.jpg" alt="用户图标">' +
+                        '                </div>' +
+                        '                <div class="user_name fl">'+dat.comment.user.nick_name+'</div>' +
+                        '                <div class="comment_text fl">'+dat.comment.content+'</div>' +
+                        '                <div class="reply_text_con fl">' +
+                        '                    <div class="user_name2">'+dat.comment.parent.user.nick_name+'</div>' +
+                        '                    <div class="reply_text">'+dat.comment.parent.content+'</div>' +
+                        '                </div>' +
+                        '                <div class="comment_time fl">'+dat.comment.create_time+'</div>' +
+                        '                <a href="javascript:;" class="comment_up has_comment_up fr">1</a>' +
+                        '                <a href="javascript:;" class="comment_reply fr">回复</a>' +
+                        '                <from class="reply_form fl" comment_id="'+ dat.comment.id +'" news_id="'+dat.comment.news_id +'" >' +
+                        '                    <textarea  class="reply_input"></textarea>' +
+                        '                    <input type="submit" name="" value="回复" class="reply_sub fr">' +
+                        '                    <input type="reset" name="" value="取消" class="reply_cancel fr">' +
+                        '                </from>' +
+                        '            </div>'
+
+
+                $(".comment_list_con").prepend(content);
+                // 请空输入框
+                // $this.prev().val('')
+                        // 关闭
+                alert($(this).parent().attr('class'))
+                alert($(this).attr('class'))
+
+                    },error:{
+
+                }
+            })
+
         }
     })
 
