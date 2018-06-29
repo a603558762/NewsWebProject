@@ -40,10 +40,10 @@ def do_index_class(index):
 def user_data_info(f):
     @functools.wraps(f)
     def query_user_data(*args, **kwargs):
-        nick_name = session.get("nick_name", None)
+        mobile = session.get("mobile", None)
         user = None
         try:
-            user = User.query.filter(User.nick_name == nick_name).first()
+            user = User.query.filter(User.mobile == mobile).first()
         except Exception as e:
             current_app.logger.debug(e)
         g.user = user

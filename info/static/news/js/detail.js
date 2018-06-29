@@ -152,10 +152,14 @@ $(function(){
         if(sHandler.indexOf('comment_up')>=0)
         {
             var $this = $(this);
+
+            var count=Number($(this).text())
             if(sHandler.indexOf('has_comment_up')>=0)
             {
                 // 如果当前该评论已经是点赞状态，再次点击会进行到此代码块内，代表要取消点赞
                 $this.removeClass('has_comment_up')
+                count-=1
+                $(this).text(count)
 
                 // 取消点赞
 
@@ -183,7 +187,12 @@ $(function(){
 
 
             }else {
+                count+=1
+                $(this).text(count)
+
                 $this.addClass('has_comment_up')
+           // 点赞加1
+
                 // 点赞
                 var params={
                     action:'add',
@@ -197,9 +206,9 @@ $(function(){
                     contentType: "application/json",
                     headers: {'X-CSRFToken':getCookie('csrf_token')},
                     success: function (dat) {
-                        // if (dat.errno!=0){
-                        //     alert(dat.errmsg)
-                        // }
+                        if (dat.errno!=0){
+
+                        }
 
                         },error:{
 

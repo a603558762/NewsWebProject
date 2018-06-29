@@ -1,19 +1,22 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask
+from flask import Flask, render_template, g
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect, csrf
 from flask_wtf.csrf import generate_csrf
 from redis import StrictRedis
 from config import Config, config
+
 # from info.modules.index import Index_blu
 
 
 db = SQLAlchemy()
-redis_store=1  # type: StrictRedis
+redis_store = 1  # type: StrictRedis
 sess = Session()
+
+
 # csrf = CSRFProtect()
 
 # 以前的初始化的代码都是在__init__文件中的
@@ -26,7 +29,7 @@ def create_app(config_name):
     global redis_store
     # 使用这个redis_store进行数据操作,config里面的SESSION_REDIS是做配置用的,配置存储的位置用
     # session的使用也有两个,一个是做配置
-    redis_store = StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT,decode_responses=True)
+    redis_store = StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT, decode_responses=True)
 
     from info.modules.index import Index_blu
 
@@ -37,7 +40,6 @@ def create_app(config_name):
     from info.modules.passport import passport_blu
     app.register_blueprint(passport_blu)
 
-
     # new_blu注册
     from info.modules.news_detail import news_blu
     app.register_blueprint(news_blu)
@@ -46,21 +48,39 @@ def create_app(config_name):
     from info.modules.profile import profile_blu
     app.register_blueprint(profile_blu)
 
+    from info.modules.admin import admin_blu
+    app.register_blueprint(admin_blu)
+
+
+
     # 创建自定义的过滤器
     from info.utils.common import do_index_class
-    app.add_template_filter(do_index_class,'do_index_class')
+    app.add_template_filter(do_index_class, 'do_index_class')
     # 防止CSRF跨站伪造
     CSRFProtect(app)
+
+    # 创建404错误页面
+    from info.utils.common import user_data_info
+    @app.errorhandler(404)
+    @user_data_info
+    def page_not_found(e):
+        user = g.user
+        data = {
+            'user': user.to_dict()
+        }
+        return render_template('news/404.html',data=data)
 
     @app.after_request
     def after_request(response):
         csrf_token = generate_csrf()
         response.set_cookie('csrf_token', csrf_token)
         return response
+
     # 将session保存到redis
     sess.init_app(app)
     setup_log(config_name)
     return app
+
 
 def setup_log(config_name):
     """配置日志"""
@@ -76,17 +96,9 @@ def setup_log(config_name):
     # 为全局的日志工具对象（flask app使用的）添加日志记录器
     logging.getLogger().addHandler(file_log_handler)
 
-
-
-
 # 配置redis
 
 # 开启CSRF保护
-
-
-
-
-
 
 
 # 蓝图注册
