@@ -35,7 +35,7 @@ def create_admin(name, password):
         return
     print('创建管理员成功')
 
-
+# cexiay
 
 if __name__ == '__main__':
     # print(app.url_map)
