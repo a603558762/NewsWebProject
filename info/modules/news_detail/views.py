@@ -19,6 +19,14 @@ def news_detail(news_id):
 
     if not news:
         return jsonify(errno=RET.PARAMERR, errmsg="没有找到新闻")
+
+    # 点击新闻,新闻的点击量+1
+    try:
+        news.clicks+=1
+    except Exception as e:
+        current_app.logger.debug(e)
+
+
     # 获取新闻评论,2中写法,第二种可以按照时间顺序发给评论排序排序
     news_comments_list = list()
     # for comment in news.comments:
@@ -91,7 +99,7 @@ def news_detail(news_id):
 
     }
 
-    return render_template('/news/detail.html', data=data)
+    return render_template('news/detail.html', data=data)
 
 
 @news_blu.route('/collect_news', methods=['post'])
