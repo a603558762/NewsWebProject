@@ -1,21 +1,41 @@
-from flask import render_template, request, current_app
+from flask import render_template, request, current_app, g, abort, session
 
 from info.models import User
 from info.modules.admin import admin_blu
+from info.utils.common import user_data_info
 
 
 @admin_blu.route('/')
+@user_data_info
 def index():
-    return render_template('admin/index.html')
+    user=g.user
+    if not user :
+        abort(404)
+    if not session['is_admin']:
+        abort(404)
+
+    data={
+        'user':user.to_dict()
+    }
+    return render_template('admin/index.html',data=data)
 
 
 @admin_blu.route('/login', methods=['get', 'post'])
+@user_data_info
 def login():
     if request.method == 'GET':
+        if g.user and session['is_admin']:
+            data = {
+                'user': g.user.to_dict()
+            }
+            return render_template('admin/index.html', data=data)
+
         data = {
             'error': ''
         }
         return render_template('admin/login.html', data=data)
+
+
 
     mobile = request.form.get('username')
     password = request.form.get('password')

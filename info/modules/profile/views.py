@@ -30,7 +30,10 @@ def center():
 def base_info():
     print(request.json)
     if request.method != 'POST':
-        return render_template('news/user_base_info.html')
+        data={
+            'user_info':g.user.to_dict()
+        }
+        return render_template('news/user_base_info.html',data=data)
 
     signature = request.json.get('signature')
     nick_name = request.json.get('nick_name')

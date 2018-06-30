@@ -38,6 +38,7 @@ $(function () {
                     parent.$('.user_center_name').html(dat.data.user_info.nick_name)
                     parent.$('.lgin_pic').next().html(dat.data.user_info.nick_name)
                     // 部分更新
+                    location.reload()
 
                 },error:{
 

@@ -77,7 +77,7 @@ def news_detail(news_id):
     rank_list = list()
 
     for i in rank_top:
-        rank_list.append(i.title)
+        rank_list.append(i.to_review_dict())
 
     # 获取登录状态
     user = g.user
