@@ -206,7 +206,7 @@ def user_news_release():
         news.source = user.nick_name
         news.content = content
         news.title = title
-        news.status = 0
+        news.status = 1
         news.index_image_url = pic_url
         db.session.add(news)
         db.session.commit()

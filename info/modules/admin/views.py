@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from flask import render_template, request, current_app, g, abort, session, redirect, url_for, jsonify
 
 from info import constants
-from info.models import User
+from info.models import User, News
 from info.modules.admin import admin_blu
 from info.utils.common import user_data_info
 from info.utils.response_code import RET
@@ -31,10 +31,9 @@ def index():
 def login():
     if request.method == 'GET':
         if g.user and session['is_admin']:
-            data = {
-                'user': g.user.to_dict()
-            }
-            return render_template('admin/index.html', data=data)
+
+            return redirect(url_for('admin.index'))
+
 
         data = {
             'error': ''
@@ -164,7 +163,6 @@ def user_count():
 
     }
 
-    print(data)
     return render_template('admin/user_count.html', data=data)
 
 
@@ -199,3 +197,32 @@ def user_list():
     }
 
     return render_template('admin/user_list.html', data=data)
+
+@admin_blu.route('/news_review')
+def news_review():
+    current_page=request.args.get('page',1)
+    try:
+        current_page=int(current_page)
+    except Exception as e:
+        current_app.logger.debug(e)
+        return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+    news_paginate=News.query.all().paginate\
+        (page=current_page,per_page=constants.ADMIN_NEWS_PAGE_MAX_COUNT)
+
+    total_page=news_paginate.pages
+    current_page=news_paginate.page
+
+    for temp in news_paginate.items:
+        pass
+
+
+
+    return render_template('admin/news_review.html')
+
+@admin_blu.route('/news_edit')
+def news_edit():
+    return render_template('admin/news_edit.html')
+
+@admin_blu.route('/news_type')
+def news_type():
+    return render_template('admin/news_type.html')

@@ -20,7 +20,7 @@ def index():
     # 排行榜,首先获取数据
     rank_top = None
     try:
-        rank_top = News.query.order_by(News.clicks.desc()).limit(7)
+        rank_top = News.query.order_by(News.clicks.desc(),News.status==0).limit(7)
     except Exception as e:
         current_app.logger.debug(e)
     rank_list = list()
@@ -67,7 +67,7 @@ def news_list():
     # 获取最新的文章的信息
     # cid为1 的时候,category表里有,但是在News表单里面没有cid为1的
     pagination = None
-    query_info = []
+    query_info = [News.status==0]
     if cid != 1:
         query_info.append(News.category_id == cid)
 
