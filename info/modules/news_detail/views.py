@@ -22,10 +22,9 @@ def news_detail(news_id):
 
     # 点击新闻,新闻的点击量+1
     try:
-        news.clicks+=1
+        news.clicks += 1
     except Exception as e:
         current_app.logger.debug(e)
-
 
     # 获取新闻评论,2中写法,第二种可以按照时间顺序发给评论排序排序
     news_comments_list = list()

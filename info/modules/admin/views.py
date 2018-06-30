@@ -1,4 +1,4 @@
-from flask import render_template, request, current_app, g, abort, session
+from flask import render_template, request, current_app, g, abort, session, redirect, url_for
 
 from info.models import User
 from info.modules.admin import admin_blu
@@ -8,16 +8,17 @@ from info.utils.common import user_data_info
 @admin_blu.route('/')
 @user_data_info
 def index():
-    user=g.user
-    if not user :
+    user = g.user
+    # print(user.nick_name)
+    if not user:
         abort(404)
     if not session['is_admin']:
         abort(404)
 
-    data={
-        'user':user.to_dict()
+    data = {
+        'user': user.to_dict()
     }
-    return render_template('admin/index.html',data=data)
+    return render_template('admin/index.html', data=data)
 
 
 @admin_blu.route('/login', methods=['get', 'post'])
@@ -34,8 +35,6 @@ def login():
             'error': ''
         }
         return render_template('admin/login.html', data=data)
-
-
 
     mobile = request.form.get('username')
     password = request.form.get('password')
@@ -73,8 +72,28 @@ def login():
             'error': '密码错误'
         }
         return render_template('admin/login.html', data=data)
-    data={
-        'user':user.to_dict()
+    data = {
+        'user': user.to_dict()
     }
 
-    return render_template('admin/index.html',data=data)
+    session["user_id"] = user.id
+    session["mobile"] = user.mobile
+    session["nick_name"] = user.nick_name
+    session["is_admin"] = user.is_admin
+
+
+    # return render_template('admin/index.html', data=data)
+    # return redirect('admin/index.html', data=data)
+    return redirect(url_for('admin.index'))
+
+
+@admin_blu.route('/user_count')
+def user_count():
+
+    return render_template('admin/user_count.html')
+
+
+@admin_blu.route('/user_list')
+def user_list():
+
+    return render_template('admin/user_list.html')
