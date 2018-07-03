@@ -276,14 +276,78 @@ $(function(){
 
         // 关注当前新闻作者
     $(".focus").click(function () {
+        var author_id=$('.author_card').attr('author_id')
+        var action='follow'
+        count=$('div.follows > b').text()
+        count=Number(count)
+
+
+
+        params={
+            author_id,action
+        }
+        $.ajax({
+            url: "/news_detail/followed",
+            type: "post",
+            data: JSON.stringify(params),
+            contentType: "application/json",
+            headers: {'X-CSRFToken':getCookie('csrf_token')},
+
+            success: function (dat) {
+                    alert(dat.errmsg)
+                if(dat.errno==0){
+                        $('.focus').hide()
+                        $('.focused').show()
+                        count+=1
+                        $('div.follows > b').html(count)
+
+                }
+
+                },error:{
+
+            }
+        })
 
     })
 
     // 取消关注当前新闻作者
     $(".focused").click(function () {
+        var author_id=$('.author_card').attr('author_id')
+        var action='unfollow'
+
+
+
+        params={
+            author_id,action
+        }
+        $.ajax({
+            url: "/news_detail/followed",
+            type: "post",
+            data: JSON.stringify(params),
+            contentType: "application/json",
+            headers: {'X-CSRFToken':getCookie('csrf_token')},
+
+            success: function (dat) {
+                    alert(dat.errmsg)
+                if(dat.errno==0){
+                        $('.focus').show()
+                        $('.focused').hide()
+                        count-=1
+                        $('div.follows > b').html(count)
+                }
+
+                },error:{
+
+            }
+        })
 
     })
-})
+
+
+
+
+    })
+
 
 function updateCommentCount() {
     var count = $(".comment_list").length

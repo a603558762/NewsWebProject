@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import render_template, redirect, url_for, request, jsonify, current_app, g
 
 from info import db, constants
-from info.models import Category, News
+from info.models import Category, News, User
 from info.modules.profile import profile_blu
 from info.utils.common import user_data_info
 from info.utils.image_storage import storage
@@ -91,9 +91,68 @@ def pic_info():
     return jsonify(errno=RET.OK, errmsg="上传成功!", data=data)
 
 
-@profile_blu.route('/follow')
+@profile_blu.route('/follow',methods=['get','post'])
+@user_data_info
 def follow():
-    return render_template('news/user_follow.html')
+    # 查询用户的关注表
+    user=g.user
+    if request.method=='GET':
+        followed=user.followed
+        followed_list=list()
+        for user in followed:
+            followed_list.append(user.to_dict())
+        data={
+            "followed_list":followed_list
+        }
+
+        return render_template('news/user_follow.html',data=data)
+    elif request.method=='POST':
+
+        author_id = request.json.get('author_id')
+        action = request.json.get('action')
+        if not all([author_id, action]):
+            return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+        if action not in ['follow', 'unfollow']:
+            return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+
+        if action == 'follow':
+
+            try:
+                author_id = int(author_id)
+            except Exception as e:
+                current_app.logger.debug(e)
+            # 关注作者
+            try:
+                author = User.query.filter(User.id == author_id).first()
+                if author:
+                    user.followed.append(author)
+                else:
+                    return jsonify(errno=RET.DATAERR, errmsg="没有该作者")
+            except Exception as e:
+                current_app.logger.debug(e)
+            return jsonify(errno=RET.OK, errmsg="关注成功！")
+        else:
+            try:
+                author_id = int(author_id)
+            except Exception as e:
+                current_app.logger.debug(e)
+            # 取消关注作者
+            try:
+                author = User.query.filter(User.id == author_id).first()
+                if author in user.followers:
+                    try:
+                        user.followed.remove(author)
+                    except Exception as e:
+                        current_app.logger.debug(e)
+                        return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+                else:
+                    return jsonify(errno=RET.DATAERR, errmsg="没有关注该作者")
+            except Exception as e:
+                current_app.logger.debug(e)
+            return jsonify(errno=RET.OK, errmsg="取消关注成功！")
+
+
+
 
 
 @profile_blu.route('/pass_info', methods=['get', 'post'])
@@ -227,8 +286,10 @@ def user_news_list():
         current_page=int(current_page)
     except Exception as e:
         current_app.logger.debug(e)
+    user_news=News.query.filter(News.user_id==user.id).\
+        order_by(News.create_time.desc()).paginate(page=current_page,per_page=constants.OTHER_NEWS_PAGE_MAX_COUNT, error_out=False)
 
-    user_news=user.news_list.paginate(page=current_page,per_page=constants.OTHER_NEWS_PAGE_MAX_COUNT, error_out=False)
+    # user_news=user.news_list.paginate(page=current_page,per_page=constants.OTHER_NEWS_PAGE_MAX_COUNT, error_out=False)
     total_page=user_news.pages
     current_page=user_news.page
     user_news_list=list()

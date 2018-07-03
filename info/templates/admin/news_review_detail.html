@@ -59,13 +59,13 @@
             <input type="button" value="取消" class="cancel" onclick="cancel()">
         </div>
         <!-- 隐藏字段，用于记录当前新闻id -->
-        <input name="news_id" value="{{ data.news.id }}" hidden>
+        <input name="news_id" value="{{ data.news.id }}" type="hidden">
     </form>
 </div>
 
 <script>
     $('.news_review').submit(function (e) {
-
+            e.preventDefault()
         $(this).ajaxSubmit({
             beforeSubmit: function (request) {
                 // 在提交之前，对参数进行处理

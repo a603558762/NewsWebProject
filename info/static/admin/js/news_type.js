@@ -62,12 +62,32 @@ $(function(){
                 $error.html('输入框不能为空').show();
                 return;
             }
+
             params = {
                 "name": sVal,
+
             }
         }
 
         // TODO 发起修改分类请求
+        $.ajax({
+            url: "/admin/news_type",
+            type: "post",
+            data: JSON.stringify(params),
+            contentType: "application/json",
+            headers: {
+                "X-CSRFToken": getCookie('csrf_token'),
+            },
+            success: function (dat) {
+                alert(dat.errmsg)
+                if (dat.errno==0){
+                    window.location.reload()
+                }
+
+                },error:{
+
+            }
+        })
 
     })
 })

@@ -32,18 +32,22 @@ def createPhone():
     return random.choice(prelist) + "".join(random.choice("0123456789") for i in range(8))
 
 users=[]
-for i in range(1, 10000):
-    # 添加随机人员到时数据库
-    user = User()
-    user.nick_name = str(i).rjust(5, '0')
-    user.password_hash = 'pbkdf2:sha256:50000$lJsx3FLA$46e756412d374e3b9597418e2e04baa899e90ffbf5c0b730cb9868aec6e88d6b'
-    user.create_time = strftime("%Y-%m-%d %H:%M:%S", localtime(random.uniform(time1, time2)))
-    user.mobile = createPhone()
-    user.last_login = strftime("%Y-%m-%d %H:%M:%S", localtime(random.uniform(time3, time4)))
-    users.append(user)
-    print(i)
 
 with app.app_context():
-    db.session.add_all(users)
-    db.session.commit()
+    for i in range(5, 10000):
+        # 添加随机人员到时数据库
+        user = User.query.get(i)
+        user.signature='这家伙懒死，什么也没有留下'
+        # user.nick_name = str(i).rjust(5, '0')
+        # user.password_hash = 'pbkdf2:sha256:50000$lJsx3FLA$46e756412d374e3b9597418e2e04baa899e90ffbf5c0b730cb9868aec6e88d6b'
+        # user.create_time = strftime("%Y-%m-%d %H:%M:%S", localtime(random.uniform(time1, time2)))
+        # user.mobile = createPhone()
+        # user.last_login = strftime("%Y-%m-%d %H:%M:%S", localtime(random.uniform(time3, time4)))
+        # users.append(user)
+        db.session.commit()
+        print(i)
+
+    # with app.app_context():
+    #     # db.session.add_all(users)
+    #     db.session.commit()
 print('OK')

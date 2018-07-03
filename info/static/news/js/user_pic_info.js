@@ -19,6 +19,7 @@ $(function () {
                 alert(dat.errmsg)
                 if (dat.errno == "0") {
                     parent.$('.user_center_pic').children().attr('src',dat.data.user_info.avatar_url)
+                    parent.$('div.header_con > div > div > img').attr('src',dat.data.user_info.avatar_url)
                     $('.label01').next().attr('src',dat.data.user_info.avatar_url)
 
                 }else {

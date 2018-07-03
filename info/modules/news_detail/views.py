@@ -1,4 +1,4 @@
-from flask import render_template, session, current_app, g, request, jsonify
+from flask import render_template, session, current_app, g, request, jsonify, redirect
 
 from info import db
 from info.models import User, News, Comment, CommentLike
@@ -88,13 +88,45 @@ def news_detail(news_id):
             news_collected = True
         else:
             news_collected = False
+
+    # 是否已经关注新闻作者
+
+    # if not user:
+    isfollowed=False
+
+    if user:
+        author = None
+        followed = None
+
+        try:
+            author_id=news.user_id
+            author=User.query.filter(User.id==author_id).first()
+            followed=user.followed
+            # print(len(followed))
+            for i in followed:
+                print(i.id)
+        except Exception as e:
+            current_app.logger.debug(e)
+            return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+
+        if author in followed:
+            isfollowed=True
+        else:
+            isfollowed=False
+
+        # followed_list=list()
+        # for temp in followed:
+        #     followed_list.append(temp.to_dict())
+
     data = {
         "user": user.to_dict() if user else None,
         "rank_list": rank_list,
         "news_collected": news_collected,
         "news_to_dict": news.to_dict(),
         "news_comments_list": news_comments_list,
-        "user_comment_like_list": user_comment_like_list
+        "user_comment_like_list": user_comment_like_list,
+        # "followed_list":followed_list,
+        "isfollowed":isfollowed
 
     }
 
@@ -258,3 +290,53 @@ def comment_up_down():
         return jsonify(errno=RET.OK, errmsg="取消点赞成功")
     else:
         return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+
+@news_blu.route('/followed',methods=['post'])
+@user_data_info
+def followed():
+    user=g.user
+    if not user:
+        return jsonify(errno=RET.SESSIONERR, errmsg="请先登录！")
+    author_id=request.json.get('author_id')
+    action=request.json.get('action')
+    if not all([author_id,action]):
+        return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+    if action not in ['follow','unfollow']:
+        return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+
+    if action=='follow':
+
+        try:
+            author_id=int(author_id)
+        except Exception as e:
+            current_app.logger.debug(e)
+        # 关注作者
+        try:
+            author=User.query.filter(User.id==author_id).first()
+            if author:
+                user.followed.append(author)
+            else:
+                return jsonify(errno=RET.DATAERR, errmsg="没有该作者")
+        except Exception as e:
+            current_app.logger.debug(e)
+        return jsonify(errno=RET.OK, errmsg="关注成功！")
+    else:
+        try:
+            author_id=int(author_id)
+        except Exception as e:
+            current_app.logger.debug(e)
+        # 取消关注作者
+        try:
+            author=User.query.filter(User.id==author_id).first()
+            if author in user.followed:
+                try:
+                    user.followed.remove(author)
+                except Exception as e:
+                    current_app.logger.debug(e)
+                    return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+            else:
+                return jsonify(errno=RET.DATAERR, errmsg="没有关注该作者")
+        except Exception as e:
+            current_app.logger.debug(e)
+        return jsonify(errno=RET.OK, errmsg="取消关注成功！")
+

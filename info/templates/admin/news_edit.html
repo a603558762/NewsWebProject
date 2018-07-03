@@ -12,9 +12,10 @@
 <body>
 	<div class="breadcrub">
 			当前位置：新闻管理>新闻版式编辑
-		<form class="news_filter_form">
-			<input type="text" placeholder="请输入关键字" class="input_txt">
+		<form class="news_filter_form" method="post">
+			<input type="text" placeholder="请输入关键字" name="keywords" class="input_txt">
 			<input type="submit" value="搜 索" class="input_sub">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 		</form>
 	</div>
 		
@@ -27,86 +28,17 @@
 					<th width="15%">发布时间</th>
 					<th width="10%">管理操作</th>
 				</tr>
+                {% for news in data.news_list %}
 				<tr>
-					<td>1</td>
-					<td class="tleft">日本史上最大IPO之一要来了：软银计划将手机业务分拆上市</td>
-					<td>2018-3-5 21:39:05</td>
+					<td>{{ news.id }}</td>
+					<td class="tleft">{{ news.title }}</td>
+					<td>{{ news.create_time }}</td>
 					<td>
-						<a href="../../static/admin/html/news_edit_detail.html" class="edit">编辑</a>
+						<a href="{{ url_for('admin.news_edit_detail') }}?news_id={{ news.id }}" class="edit">编辑</a>
 					</td>
 				</tr>
-				<tr>
-					<td>2</td>
-					<td class="tleft">日本史上最大IPO之一要来了：软银计划将手机业务分拆上市</td>
-					<td>2018-3-5 21:39:05</td>
-					<td>
-						<a href="../../static/admin/html/news_edit_detail.html" class="edit">编辑</a>
-					</td>
-				</tr>					
-				<tr>
-					<td>3</td>
-					<td class="tleft">日本史上最大IPO之一要来了：软银计划将手机业务分拆上市</td>
-					<td>2018-3-5 21:39:05</td>
-					<td>
-						<a href="../../static/admin/html/news_edit_detail.html" class="edit">编辑</a>
-					</td>
-				</tr>
-				<tr>
-					<td>4</td>
-					<td class="tleft">日本史上最大IPO之一要来了：软银计划将手机业务分拆上市</td>
-					<td>2018-3-5 21:39:05</td>
-					<td>
-						<a href="../../static/admin/html/news_edit_detail.html" class="edit">编辑</a>
-					</td>
-				</tr>
-				<tr>
-					<td>5</td>
-					<td class="tleft">日本史上最大IPO之一要来了：软银计划将手机业务分拆上市</td>
-					<td>2018-3-5 21:39:05</td>
-					<td>
-						<a href="../../static/admin/html/news_edit_detail.html" class="edit">编辑</a>
-					</td>
-				</tr>
-				<tr>
-					<td>6</td>
-					<td class="tleft">日本史上最大IPO之一要来了：软银计划将手机业务分拆上市</td>
-					<td>2018-3-5 21:39:05</td>
-					<td>
-						<a href="../../static/admin/html/news_edit_detail.html" class="edit">编辑</a>
-					</td>
-				</tr>
-				<tr>
-					<td>7</td>
-					<td class="tleft">日本史上最大IPO之一要来了：软银计划将手机业务分拆上市</td>
-					<td>2018-3-5 21:39:05</td>
-					<td>
-						<a href="../../static/admin/html/news_edit_detail.html" class="edit">编辑</a>
-					</td>
-				</tr>
-				<tr>
-					<td>8</td>
-					<td class="tleft">日本史上最大IPO之一要来了：软银计划将手机业务分拆上市</td>
-					<td>2018-3-5 21:39:05</td>
-					<td>
-						<a href="../../static/admin/html/news_edit_detail.html" class="edit">编辑</a>
-					</td>
-				</tr>
-				<tr>
-					<td>9</td>
-					<td class="tleft">日本史上最大IPO之一要来了：软银计划将手机业务分拆上市</td>
-					<td>2018-3-5 21:39:05</td>
-					<td>
-						<a href="../../static/admin/html/news_edit_detail.html" class="edit">编辑</a>
-					</td>
-				</tr>
-				<tr>
-					<td>10</td>
-					<td class="tleft">日本史上最大IPO之一要来了：软银计划将手机业务分拆上市</td>
-					<td>2018-3-5 21:39:05</td>
-					<td>
-						<a href="../../static/admin/html/news_edit_detail.html" class="edit">编辑</a>
-					</td>
-				</tr>
+                {% endfor %}
+
 			</table>
 		</div>
 		
