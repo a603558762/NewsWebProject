@@ -59,10 +59,10 @@
         <script>
             $(function() {
                 $("#pagination").pagination({
-                    currentPage: 2,
-                    totalPage: 3,
+                    currentPage: {{ data.current_page }},
+                    totalPage:{{ data.total_page }},
                     callback: function(current) {
-                        alert('ok!');
+                        window.location.href='/profile/follow?page='+current
                     }
                 });
             });

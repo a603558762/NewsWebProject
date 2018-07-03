@@ -97,15 +97,30 @@ def follow():
     # 查询用户的关注表
     user=g.user
     if request.method=='GET':
-        followed=user.followed
+        current_page=request.args.get('page',1)
+        try:
+            current_page=int(current_page)
+        except Exception as e:
+            current_app.logger.debug(e)
+
+
+        followed=user.followed.paginate\
+            (page=current_page,per_page=constants.USER_FOLLOWED_MAX_COUNT,error_out=False)
+        total_page=followed.pages
+        current_page=followed.page
+
         followed_list=list()
-        for user in followed:
+        for user in followed.items:
             followed_list.append(user.to_dict())
         data={
-            "followed_list":followed_list
+            "followed_list":followed_list,
+            "total_page":total_page,
+            "current_page":current_page
+
         }
 
         return render_template('news/user_follow.html',data=data)
+
     elif request.method=='POST':
 
         author_id = request.json.get('author_id')
