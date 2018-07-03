@@ -102,9 +102,6 @@ def news_detail(news_id):
             author_id=news.user_id
             author=User.query.filter(User.id==author_id).first()
             followed=user.followed
-            # print(len(followed))
-            for i in followed:
-                print(i.id)
         except Exception as e:
             current_app.logger.debug(e)
             return jsonify(errno=RET.DATAERR, errmsg="参数错误")

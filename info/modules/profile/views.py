@@ -30,10 +30,10 @@ def center():
 def base_info():
     print(request.json)
     if request.method != 'POST':
-        data={
-            'user_info':g.user.to_dict()
+        data = {
+            'user_info': g.user.to_dict()
         }
-        return render_template('news/user_base_info.html',data=data)
+        return render_template('news/user_base_info.html', data=data)
 
     signature = request.json.get('signature')
     nick_name = request.json.get('nick_name')
@@ -91,37 +91,36 @@ def pic_info():
     return jsonify(errno=RET.OK, errmsg="上传成功!", data=data)
 
 
-@profile_blu.route('/follow',methods=['get','post'])
+@profile_blu.route('/follow', methods=['get', 'post'])
 @user_data_info
 def follow():
     # 查询用户的关注表
-    user=g.user
-    if request.method=='GET':
-        current_page=request.args.get('page',1)
+    user = g.user
+    if request.method == 'GET':
+        current_page = request.args.get('page', 1)
         try:
-            current_page=int(current_page)
+            current_page = int(current_page)
         except Exception as e:
             current_app.logger.debug(e)
 
+        followed = user.followed.paginate \
+            (page=current_page, per_page=constants.USER_FOLLOWED_MAX_COUNT, error_out=False)
+        total_page = followed.pages
+        current_page = followed.page
 
-        followed=user.followed.paginate\
-            (page=current_page,per_page=constants.USER_FOLLOWED_MAX_COUNT,error_out=False)
-        total_page=followed.pages
-        current_page=followed.page
-
-        followed_list=list()
+        followed_list = list()
         for user in followed.items:
             followed_list.append(user.to_dict())
-        data={
-            "followed_list":followed_list,
-            "total_page":total_page,
-            "current_page":current_page
+        data = {
+            "followed_list": followed_list,
+            "total_page": total_page,
+            "current_page": current_page
 
         }
 
-        return render_template('news/user_follow.html',data=data)
+        return render_template('news/user_follow.html', data=data)
 
-    elif request.method=='POST':
+    elif request.method == 'POST':
 
         author_id = request.json.get('author_id')
         action = request.json.get('action')
@@ -165,9 +164,6 @@ def follow():
             except Exception as e:
                 current_app.logger.debug(e)
             return jsonify(errno=RET.OK, errmsg="取消关注成功！")
-
-
-
 
 
 @profile_blu.route('/pass_info', methods=['get', 'post'])
@@ -222,7 +218,7 @@ def user_collection():
         'current_page': current_page,
     }
     # return jsonify(errno=RET.OK, errmsg="发布成功!",data=data)
-    return render_template('news/user_collection.html',data=data)
+    return render_template('news/user_collection.html', data=data)
 
 
 @profile_blu.route('/user_news_release', methods=['get', 'post'])
@@ -296,24 +292,92 @@ def user_news_release():
 def user_news_list():
     user = g.user
     # 查询新闻分类
-    current_page=request.args.get('current_page',1)
+    current_page = request.args.get('current_page', 1)
     try:
-        current_page=int(current_page)
+        current_page = int(current_page)
     except Exception as e:
         current_app.logger.debug(e)
-    user_news=News.query.filter(News.user_id==user.id).\
-        order_by(News.create_time.desc()).paginate(page=current_page,per_page=constants.OTHER_NEWS_PAGE_MAX_COUNT, error_out=False)
+    user_news = News.query.filter(News.user_id == user.id). \
+        order_by(News.create_time.desc()).paginate(page=current_page, per_page=constants.OTHER_NEWS_PAGE_MAX_COUNT,
+                                                   error_out=False)
 
     # user_news=user.news_list.paginate(page=current_page,per_page=constants.OTHER_NEWS_PAGE_MAX_COUNT, error_out=False)
-    total_page=user_news.pages
-    current_page=user_news.page
-    user_news_list=list()
+    total_page = user_news.pages
+    current_page = user_news.page
+    user_news_list = list()
     for temp in user_news.items:
         user_news_list.append(temp.to_review_dict())
 
-    data={
-        'user_news_list':user_news_list,
-        'total_page':total_page,
-        'current_page':current_page
+    data = {
+        'user_news_list': user_news_list,
+        'total_page': total_page,
+        'current_page': current_page
     }
-    return render_template('news/user_news_list.html',data=data)
+    return render_template('news/user_news_list.html', data=data)
+
+
+@profile_blu.route('/other')
+@user_data_info
+def other():
+    u=g.user
+    user_id=request.args.get('id')
+    if not user_id:
+        return jsonify(errno=RET.DATAERR, errmsg="参数错误或者用户不存在")
+    user=None
+    try:
+        user_id=int(user_id)
+        user=User.query.get(user_id)
+    except Exception as e:
+        current_app.logger.debug(e)
+        return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+    # 用户存在
+    user_info=user.to_dict()
+    # 获取页码
+    current_page = request.args.get('page', 1)
+    try:
+        current_page = int(current_page)
+    except Exception as e:
+        current_app.logger.debug(e)
+    user_news = News.query.filter(News.user_id == user.id,News.status==0). \
+        order_by(News.create_time.desc()).paginate(page=current_page, per_page=constants.OTHER_NEWS_PAGE_MAX_COUNT,
+                                                   error_out=False)
+
+    # user_news=user.news_list.paginate(page=current_page,per_page=constants.OTHER_NEWS_PAGE_MAX_COUNT, error_out=False)
+    total_page = user_news.pages
+    current_page = user_news.page
+    user_news_list = list()
+
+    for temp in user_news.items:
+        user_news_list.append(temp.to_review_dict())
+
+    # 查询是否关注了作者
+        # 是否已经关注新闻作者
+
+    # if not user:
+    isfollowed = False
+
+    if u:
+        author = None
+        followed = None
+
+        try:
+            author = User.query.get(user_id)
+            followed = u.followed
+        except Exception as e:
+            current_app.logger.debug(e)
+            return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+
+        if author in followed:
+            isfollowed = True
+        else:
+            isfollowed = False
+
+    data = {
+        "user_news_list": user_news_list,
+        "total_page": total_page,
+        "current_page": current_page,
+        "user": user_info,
+        "isfollowed":isfollowed
+    }
+
+    return render_template('news/other.html',data=data)
