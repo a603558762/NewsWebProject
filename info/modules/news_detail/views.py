@@ -207,6 +207,7 @@ def commit():
 
     # 将结果返回给前段
     comment_ret = comment.to_dict()
+    print(comment_ret)
     return jsonify(errno=RET.OK, errmsg="评论成功", comment=comment_ret)
 
 

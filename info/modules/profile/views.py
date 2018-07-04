@@ -316,68 +316,120 @@ def user_news_list():
     return render_template('news/user_news_list.html', data=data)
 
 
-@profile_blu.route('/other')
+@profile_blu.route('/other',methods=['get','post'])
 @user_data_info
 def other():
-    u=g.user
-    user_id=request.args.get('id')
-    if not user_id:
-        return jsonify(errno=RET.DATAERR, errmsg="参数错误或者用户不存在")
-    user=None
-    try:
-        user_id=int(user_id)
-        user=User.query.get(user_id)
-    except Exception as e:
-        current_app.logger.debug(e)
-        return jsonify(errno=RET.DATAERR, errmsg="参数错误")
-    # 用户存在
-    user_info=user.to_dict()
-    # 获取页码
-    current_page = request.args.get('page', 1)
-    try:
-        current_page = int(current_page)
-    except Exception as e:
-        current_app.logger.debug(e)
-    user_news = News.query.filter(News.user_id == user.id,News.status==0). \
-        order_by(News.create_time.desc()).paginate(page=current_page, per_page=constants.OTHER_NEWS_PAGE_MAX_COUNT,
-                                                   error_out=False)
-
-    # user_news=user.news_list.paginate(page=current_page,per_page=constants.OTHER_NEWS_PAGE_MAX_COUNT, error_out=False)
-    total_page = user_news.pages
-    current_page = user_news.page
-    user_news_list = list()
-
-    for temp in user_news.items:
-        user_news_list.append(temp.to_review_dict())
-
-    # 查询是否关注了作者
-        # 是否已经关注新闻作者
-
-    # if not user:
-    isfollowed = False
-
-    if u:
-        author = None
-        followed = None
-
+    if request.method=="GET":
+        u=g.user
+        user_id=request.args.get('id')
+        if not user_id:
+            return jsonify(errno=RET.DATAERR, errmsg="参数错误或者用户不存在")
+        user=None
         try:
-            author = User.query.get(user_id)
-            followed = u.followed
+            user_id=int(user_id)
+            user=User.query.get(user_id)
         except Exception as e:
             current_app.logger.debug(e)
             return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+        # 用户存在
+        user_info=user.to_dict()
+        # 获取页码
+        current_page = request.args.get('page', 1)
+        try:
+            current_page = int(current_page)
+        except Exception as e:
+            current_app.logger.debug(e)
+        user_news = News.query.filter(News.user_id == user.id,News.status==0). \
+            order_by(News.create_time.desc()).paginate(page=current_page, per_page=constants.OTHER_NEWS_PAGE_MAX_COUNT,
+                                                       error_out=False)
 
-        if author in followed:
-            isfollowed = True
+        # user_news=user.news_list.paginate(page=current_page,per_page=constants.OTHER_NEWS_PAGE_MAX_COUNT, error_out=False)
+        total_page = user_news.pages
+        current_page = user_news.page
+        user_news_list = list()
+
+        for temp in user_news.items:
+            user_news_list.append(temp.to_review_dict())
+
+        # 查询是否关注了作者
+            # 是否已经关注新闻作者
+
+        # if not user:
+        isfollowed = False
+
+        if u:
+            author = None
+            followed = None
+
+
+            try:
+                author = User.query.get(user_id)
+                followed = u.followed
+            except Exception as e:
+                current_app.logger.debug(e)
+                return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+
+            if author in followed:
+                isfollowed = True
+            else:
+                isfollowed = False
+
+
+        data = {
+            "user_news_list": user_news_list,
+            "total_page": total_page,
+            "current_page": current_page,
+            "user_author": user_info,
+            "isfollowed":isfollowed,
+            "user":g.user.to_dict() if g.user else None
+        }
+
+        return render_template('news/other.html',data=data)
+
+    elif request.method == 'POST':
+        user=g.user
+        if not user:
+            return jsonify(errno=RET.SESSIONERR, errmsg="请登录后操作！")
+
+        author_id = request.json.get('author_id')
+        action = request.json.get('action')
+        if not all([author_id, action]):
+            return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+        if action not in ['follow', 'unfollow']:
+            return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+
+        if action == 'follow':
+
+            try:
+                author_id = int(author_id)
+            except Exception as e:
+                current_app.logger.debug(e)
+            # 关注作者
+            try:
+                author = User.query.filter(User.id == author_id).first()
+                if author:
+                    user.followed.append(author)
+                else:
+                    return jsonify(errno=RET.DATAERR, errmsg="没有该作者")
+            except Exception as e:
+                current_app.logger.debug(e)
+            return jsonify(errno=RET.OK, errmsg="关注成功！")
         else:
-            isfollowed = False
-
-    data = {
-        "user_news_list": user_news_list,
-        "total_page": total_page,
-        "current_page": current_page,
-        "user": user_info,
-        "isfollowed":isfollowed
-    }
-
-    return render_template('news/other.html',data=data)
+            try:
+                author_id = int(author_id)
+            except Exception as e:
+                current_app.logger.debug(e)
+            # 取消关注作者
+            try:
+                author = User.query.filter(User.id == author_id).first()
+                if author in user.followers:
+                    try:
+                        user.followed.remove(author)
+                    except Exception as e:
+                        current_app.logger.debug(e)
+                        return jsonify(errno=RET.DATAERR, errmsg="参数错误")
+                else:
+                    return jsonify(errno=RET.DATAERR, errmsg="没有关注该作者")
+            except Exception as e:
+                current_app.logger.debug(e)
+            return jsonify(errno=RET.OK, errmsg="取消关注成功！")

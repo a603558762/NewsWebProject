@@ -223,8 +223,8 @@ $(function(){
         if(sHandler.indexOf('reply_sub')>=0)
 
         {  // 获取得到新闻的id , 评论的内容 , 回复的评论的id
-         var parent_comment_id=$(this).parent().attr('comment_id');
-         var news_id=$(this).parent().attr('news_id');
+         var parent_comment_id=$(this).parent().prev().prev().attr('comment_id');
+         var news_id=$('.collected').attr('news_id');
          var comment=$(this).prev().val();
 
          if(!comment){alert('评论不能为空')};
@@ -246,7 +246,7 @@ $(function(){
                         '                <div class="user_name fl">'+dat.comment.user.nick_name+'</div>' +
                         '                <div class="comment_text fl">'+dat.comment.content+'</div>' +
                         '                <div class="reply_text_con fl">' +
-                        '                    <div class="user_name2">'+dat.comment.parent.user.nick_name+'</div>' +
+                        '                    <div class="user_name2">'+dat.comment.parent.nick_name+'</div>' +
                         '                    <div class="reply_text">'+dat.comment.parent.content+'</div>' +
                         '                </div>' +
                         '                <div class="comment_time fl">'+dat.comment.create_time+'</div>' +
