@@ -31,7 +31,7 @@ def get_image_code(id):
     print(name)
     print(text)
 
-    # 修改链接类型Content-Type,将验证码图形发送给前端
+    # 修改链接类型Content-Type,将验证.码图形发送给前端
     response = make_response(captch_img)
     response.headers['Content-Type'] = 'image/jpg'
     # pass
@@ -60,8 +60,8 @@ def check_captch_id():
     if not real_captcha_id:
         return jsonify(errno=RET.NODATA, errmsg="验证码过期")
     # 验证手机好:
-    # if not re.match(r'^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d{8}$',phone_num):
-    #     return jsonify(errno=RET.DATAERR, errmsg="手机号错误")
+    if not re.match(r'^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d{8}$',phone_num):
+        return jsonify(errno=RET.DATAERR, errmsg="手机号错误")
     # 发送短信本地随机生成短信验证码
     randam_smscode = ''.join(str(i) for i in random.sample(range(0, 9), 6))
     print(randam_smscode)
@@ -69,15 +69,15 @@ def check_captch_id():
         redis_store.set('mobile' + phone_num, randam_smscode, ex=SMS_CODE_REDIS_EXPIRES)
     except Exception as e:
         current_app.logger.debug(e)
-    # # 导入云通讯平台,电信的服务发送短信
-    # sms_status=CCP().send_template_sms(to=18506255964,datas=[randam_smscode,SMS_CODE_REDIS_EXPIRES/60],temp_id=1)
-    # if sms_status==0:
-    #     print('发送成功')
-    #     return jsonify(errno=RET.OK, errmsg="发送成功")
-    # elif sms_status==-1:
-    #     print('电信发送失败')
-    # else:
-    #     print('未知错误')
+    # 导入云通讯平台,电信的服务发送短信
+    sms_status=CCP().send_template_sms(to=phone_num,datas=[randam_smscode,SMS_CODE_REDIS_EXPIRES/60],temp_id=1)
+    if sms_status==0:
+        print('发送成功')
+        return jsonify(errno=RET.OK, errmsg="发送成功")
+    elif sms_status==-1:
+        print('电信发送失败')
+    else:
+        print('未知错误')
 
     return jsonify(errno=RET.OK, errmsg="发送成功")
 
@@ -120,22 +120,24 @@ def register():
         user.nick_name = mobile
         user.mobile = mobile
         user.password = password
+        user.is_admin =False
         db.session.add(user)
         db.session.commit()
     except Exception as e:
         db.session.rollback()
         current_app.logger.debug(e)
         return jsonify(errno=RET.SERVERERR, errmsg="内部错误")
-    print('注册成功')
+    # print('注册成功')
     try:
         redis_store.delete('' + mobile)
     except Exception as e:
         current_app.logger.debug(e)
 
     # 注册后添加SESSION
-    session['nick_name'] = mobile
-    session["user_id"] = mobile
-    session["mobile"] = mobile
+    session["nick_name"] = user.mobile
+    session["user_id"] = user.id
+    session["mobile"] = user.mobile
+    session["is_admin"]=user.is_admin
 
 
     return jsonify(errno=RET.OK, errmsg="注册成功")
@@ -186,5 +188,6 @@ def logout():
     session.pop('user_id', None)
     session.pop('mobile', None)
     session.pop('nick_name', None)
+    session.pop("is_admin",None)
 
     return jsonify(errno=RET.OK, errmsg="退出成功")
